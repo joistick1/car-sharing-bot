@@ -11,7 +11,8 @@ const OtherController = require('./controllers/other.controller');
 const listJourneysController = require('./controllers/listJourneys.controller');
 const setJourneyController = require('./controllers/setJourney.controller');
 
-tg.router.when(new Telegram.TextCommand('/hello', 'helloCommand'), new HelloController())
+tg.router
+	.when(new Telegram.TextCommand('/hello', 'helloCommand'), new HelloController())
 	.when(new Telegram.TextCommand('/list', 'listJourneysCommand'), new listJourneysController())
-    .when(new Telegram.TextCommand('/apply', 'applyJourneyCommand'), new listJourneysController())
+    	.when(new Telegram.TextCommand('/apply', 'applyJourneyCommand'), new listJourneysController())
 	.otherwise(new setJourneyController());
