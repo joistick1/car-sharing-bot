@@ -1,0 +1,18 @@
+{
+  "name": "car-sharing-bot",
+  "version": "1.0.0",
+  "description": "Bot for using ciklum car sharing service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.2",
+    "telegram-node-bot": "^4.0.5"
+  },
+  "devDependencies": {
+    "request": "^2.83.0"
+  }
+}
