@@ -5,23 +5,12 @@ const request = require('request');
 
 
 class listJourneysController extends Telegram.TelegramBaseController {
+	
 	listHandler($) {
-		console.log($)
-		let breed = $.message.text.split(" ")[1];
-
-		if(!breed) return $.sendMessage("Sorry, please type a breed");
-		
-		this.getJourneysList($, breed);
-	}
-
-	applyHandler($) {
-		$.Update('callback_query', function (msg) {
-			  console.log(msg.data)
-			});
-	}
+		this.getJourneysList($);
+	}	
 
 	getJourneysList($, breed) {
-		//const url = `https://dog.ceo/api/breed/${breed}/images/random` // input your url here
 		const url = `https://dog.ceo/api/breeds/list`;
 
 		// use a timeout value of 10 seconds
@@ -36,27 +25,46 @@ class listJourneysController extends Telegram.TelegramBaseController {
 		    console.log(err);
 		    return
 		  }
-		  const breed = JSON.parse(body)["message"].slice(0,4).map(function(i, val) {
-		  	return [{ text: i, callback_data: val }]
+		  const breed = JSON.parse(body)["message"].map(function(breed) {
+		  	return {
+                    	text: breed, //text of the button
+                    	callback: (callbackQuery) => {
+                        	const url = `https://dog.ceo/api/breed/${breed}/images/random`;
+							console.log(url)
+							// use a timeout value of 10 seconds
+							const timeoutInMilliseconds = 10*1000
+							const opts = {
+							  url: url,
+							  timeout: timeoutInMilliseconds
+							}
+
+							request(opts, function (err, res, body) {
+							  if (err) {
+							    console.log(err);
+							    return
+							  }
+							  $.sendMessage(JSON.parse(body)["message"])
+							 })
+                    	}
+                	}	
 		  });
-
-		  var options = {
-		    reply_markup: JSON.stringify({
-		      inline_keyboard: breed
-		    })
-		  };
-
-		  $.sendMessage("Выберите породу: ", options);
-
+		$.runInlineMenu({
+		    layout: 2, //some layouting here
+		    method: 'sendMessage', //here you must pass the method name
+		    params: ['Выбери породу, чтобы увидеть фото породы'], //here you must pass the parameters for that method
+		    menu: breed
 		})
+	});
+}
+	displayPicture($, breed) {
+		
 	}
 	get routes() {
 		return {
-			'listJourneysCommand': 'listHandler',
-			'applyJourneyCommand': 'applyHandler'
-
+			'listJourneysCommand': 'listHandler'
 		}
 	}
+
 }
 
 module.exports = listJourneysController;
