@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.2",
     "telegram-node-bot": "^4.0.5"
   },
   "devDependencies": {
