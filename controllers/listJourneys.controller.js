@@ -1,69 +1,49 @@
 'use strict'
 
 const Telegram = require('telegram-node-bot');
-const request = require('request');
+const fetchDataService = require('../services/fetchdata.service')
 
 
 class listJourneysController extends Telegram.TelegramBaseController {
-	
-	listHandler($) {
-		this.getJourneysList($);
-	}	
 
-	getJourneysList($, breed) {
-		const url = `https://dog.ceo/api/breeds/list`;
+    listHandler($) {
+        const url = `https://dog.ceo/api/breeds/list`
+        fetchDataService.fetchData(url, function(err, res, body) {
+            if (err) {
+                console.log(err);
+                return
+            }
+            const response = JSON.parse(body)
+            const breed = response["message"].map(function(breed) {
+                return {
+                    text: breed, //text of the button
+                    callback: (callbackQuery) => {
+                        const url = `https://dog.ceo/api/breed/${breed}/images/random`;
+                        fetchDataService.fetchData(url, function(err, res, body) {
+                            if (err) {
+                                console.log(err);
+                                return
+                            }
+                            const response = JSON.parse(body);
+                            $.sendMessage(response["message"]);
+                        })
+                    }
+                }
+            });
+            $.runInlineMenu({
+                layout: 2, //some layouting here
+                method: 'sendMessage', //here you must pass the method name
+                params: ['Выбери интересующее направление поездки'], //here you must pass the parameters for that method
+                menu: breed
+            })
+        });
+    }
 
-		// use a timeout value of 10 seconds
-		const timeoutInMilliseconds = 10*1000
-		const opts = {
-		  url: url,
-		  timeout: timeoutInMilliseconds
-		}
-
-		request(opts, function (err, res, body) {
-		  if (err) {
-		    console.log(err);
-		    return
-		  }
-		  const breed = JSON.parse(body)["message"].map(function(breed) {
-		  	return {
-                    	text: breed, //text of the button
-                    	callback: (callbackQuery) => {
-                        	const url = `https://dog.ceo/api/breed/${breed}/images/random`;
-							console.log(url)
-							// use a timeout value of 10 seconds
-							const timeoutInMilliseconds = 10*1000
-							const opts = {
-							  url: url,
-							  timeout: timeoutInMilliseconds
-							}
-
-							request(opts, function (err, res, body) {
-							  if (err) {
-							    console.log(err);
-							    return
-							  }
-							  $.sendMessage(JSON.parse(body)["message"])
-							 })
-                    	}
-                	}	
-		  });
-		$.runInlineMenu({
-		    layout: 2, //some layouting here
-		    method: 'sendMessage', //here you must pass the method name
-		    params: ['Выбери породу, чтобы увидеть фото породы'], //here you must pass the parameters for that method
-		    menu: breed
-		})
-	});
-}
-	displayPicture($, breed) {
-		
-	}
-	get routes() {
-		return {
-			'listJourneysCommand': 'listHandler'
-		}
-	}
+    get routes() {
+        return {
+            'listJourneysCommand': 'listHandler'
+        }
+    }
 
 }
 
