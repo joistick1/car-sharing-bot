@@ -30,7 +30,7 @@ module.exports = {
 			            "notification_date": new Date().getTime()
 			        }
 			        this._isUserExists($.message.from.id, collection, function(err, doc) {
-			            if (doc) {
+			            if (doc.length > 0) {
 			                console.log('Such user already exists ');
 			            } else {
 			                collection.create(user, function(err, doc) {
