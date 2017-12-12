@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^4.0.0",
+    "mongoose": "^4.13.7",
     "telegram-node-bot": "^4.0.5"
   },
   "devDependencies": {

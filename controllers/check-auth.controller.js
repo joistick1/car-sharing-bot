@@ -5,9 +5,9 @@ const User = require("../db/models/user");
 const db = require("../db");
 const isAuth = require("../services/check-access.service");
 
-class StartController extends Telegram.TelegramBaseController {
-    startHandler($) {
-    	isAuth.check(User, $)
+class CheckAuthController extends Telegram.TelegramBaseController {
+	checkHandler($) {
+		isAuth.check(User, $)
     		.then(isAuth => {
     			if (isAuth) {
     				$.sendMessage("Вы авторизированы");
@@ -30,7 +30,7 @@ class StartController extends Telegram.TelegramBaseController {
                         })
     	$.waitForRequest
     		.then($=> {
-    			console.log($.message.contact !== null)
+    			
     			if($.message.contact !== null) {
     				$.sendMessage("Вы авторизированы");
     				$.sendMessage("Чтобы просмотреть доступные поездки, нажмите /list");
@@ -41,7 +41,7 @@ class StartController extends Telegram.TelegramBaseController {
 			            "notification_date": new Date().getTime()
 			        }
 			        this.isUserExists($.message.from.id, function(err, doc) {
-			            if (doc.length > 0) {
+			            if (doc) {
 			                console.log('Such user already exists ');
 			            } else {
 			                User.create(user, function(err, doc) {
@@ -65,22 +65,8 @@ class StartController extends Telegram.TelegramBaseController {
     		})
     			}
     		})
-    	
-        
-
-
-        //$.sendMessage('Нажми /list чтобы вывести список актуальных направлений');
-
-        // const user1 = User.findById("5a2f9a2e734d1d293235a171")
-        // .then(res=> {
-        // 	console.log("RES ", res)
-        // });
-
-
-
-    }
-
-    isUserExists(chatId, cb) {
+	}
+	isUserExists(chatId, cb) {
         User.find({
             "user_id": chatId
         }, function(err, doc) {
@@ -88,12 +74,11 @@ class StartController extends Telegram.TelegramBaseController {
             cb(err, doc);
         })
     }
-
-    get routes() {
+	get routes() {
         return {
-            'startCommand': 'startHandler'
+            'checkAuthCommand': 'checkHandler'
         }
     }
 }
 
-module.exports = StartController;
+module.exports = CheckAuthController;
