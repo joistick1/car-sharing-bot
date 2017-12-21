@@ -3,10 +3,13 @@ const request = require('request');
 module.exports = {
     check(collection, $) {
         return new Promise((resolve, reject) => {
-                let isAuth = false;
-                collection.find({"user_id": $.message.chat.id}, function(err, doc) {
-                isAuth = doc.length > 0 ? true : false;
-                resolve(isAuth)
+            let isAuth = {};
+            collection.findOne({
+                "user_id": $.message.chat.id
+            }, function(err, doc) {
+                isAuth["user_object"] = doc;
+                isAuth["valid"] = doc !== null ? true : false;
+                resolve(isAuth);
             });
         })
     }

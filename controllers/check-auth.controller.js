@@ -9,7 +9,7 @@ class CheckAuthController extends Telegram.TelegramBaseController {
 	handle($) {
 		isAuth.check(User, $)
     		.then(isAuth => {
-    			if (isAuth) {
+    			if (isAuth["valid"]) {
     				$.sendMessage("Вы авторизированы");
     				$.sendMessage("Чтобы просмотреть доступные поездки, нажмите /list");
     			} else {
